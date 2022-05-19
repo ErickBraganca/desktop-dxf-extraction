@@ -11,33 +11,36 @@
         />
       </div>
     </section>
-    <section class="table-container"></section>
+    <section class="table-container">
+      <ExtractTable
+        v-for="(key, index) in lists"
+        v-bind:key="index"
+        v-bind:list="key"
+      />
+    </section>
   </main>
 </template>
 
 <script>
 import ExtractForm from "@/components/ExtractForm.vue";
 import FileInstance from "@/components/FileInstance.vue";
+import ExtractTable from "@/components/ExtractTable.vue";
 import { useStore } from "vuex";
 import { computed } from "vue";
 export default {
   components: {
     ExtractForm,
     FileInstance,
+    ExtractTable,
   },
   setup() {
     const store = useStore();
-    let files = computed(() => store.getters.getFilesLoaded);
-    /*
-    let files = [
-      { name: "Projeto de Estruturas", date: "18/05/2022" },
-      { name: "Projeto de Casas", date: "18/05/2022" },
-      { name: "Diagrama Elétrico", date: "18/05/2022" },
-    ];
-    */
+    let files = computed(() => store.getters.getLoadedFiles);
+    let lists = computed(() => store.getters.getContentFile);
 
     return {
       files,
+      lists,
     };
   },
 };
@@ -45,7 +48,7 @@ export default {
 
 <style scoped>
 .extract-container {
-  height: 100%;
+  height: 97%;
   width: 100%;
   display: flex;
   flex-direction: row;
@@ -57,11 +60,19 @@ export default {
   border-radius: 1rem;
   box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
     rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
-  width: 220px;
+  min-width: 200px;
+  max-height: 100vh;
 }
 
 .table-container {
-  flex: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  align-items: center;
+  height: 100%;
+  overflow-y: scroll;
+  width: 100%;
+  margin: 0 1rem 0 1rem;
 }
 
 h2 {

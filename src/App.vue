@@ -26,7 +26,6 @@ html {
 }
 
 #app {
-  border-radius: 2rem;
   background-color: #313940;
 }
 

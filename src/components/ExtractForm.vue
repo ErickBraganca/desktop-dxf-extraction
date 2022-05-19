@@ -41,47 +41,59 @@
             type="button"
             id="buttonSend"
             class="send-button"
-            v-on:click="getFile"
+            v-on:click="getContent"
           >
             <i class="fas fa-sign-out-alt"></i>
           </button>
-          <button type="button" id="buttonDelet" class="delet-button">
+          <button
+            type="button"
+            id="buttonDelet"
+            class="delet-button"
+            v-on:click="deletFile"
+          >
             <i class="fas fa-window-close"></i>
           </button>
-          <button type="button" id="buttonClean" class="clean-button">
+          <button
+            type="button"
+            id="buttonClean"
+            class="clean-button"
+            v-on:click="cleanContent"
+          >
             <i class="fas fa-trash"></i>
           </button>
         </div>
       </section>
     </form>
-    <div
-      class="file-index"
-      v-bind:key="index"
-      v-for="(key, index) in fileLoaded"
-    >
-      <span>{{ key.name }}</span>
-      <span>{{ key.path }}</span>
-    </div>
   </div>
 </template>
 
 <script>
-import { uploadFile, readFile } from "../engine/main";
+import { uploadFile, readFile } from "@/engine/parser";
 import { ref } from "vue";
+import { useStore } from "vuex";
 
 export default {
   setup() {
+    const store = useStore();
     let fileStatus = ref("Pick File");
     let fileLoaded = ref(null);
 
     const handleFile = {
-      load: (status) => {
-        if (status) {
+      load: (file) => {
+        if (file) {
           fileStatus.value = "File Loaded";
+          store.dispatch("SET_LOADED_FILES", file);
         }
       },
-      read: (file) => {
-        fileLoaded.value = file;
+      read: (content) => {
+        store.dispatch("SET_EMPTY_CONTENT", content);
+        store.dispatch("SET_FILE_CONTENT", content);
+      },
+      clean: () => {
+        store.dispatch("SET_EMPTY_CONTENT");
+      },
+      delete: () => {
+        store.dispatch("SET_EMPTY_FILE");
       },
     };
 
@@ -89,15 +101,25 @@ export default {
       uploadFile(handleFile.load);
     };
 
-    const getFile = () => {
+    const getContent = () => {
       readFile(handleFile.read);
+    };
+
+    const cleanContent = () => {
+      handleFile.clean();
+    };
+
+    const deletFile = () => {
+      handleFile.delete();
     };
 
     return {
       fileStatus,
       fileLoaded,
       loadFile,
-      getFile,
+      getContent,
+      cleanContent,
+      deletFile,
     };
   },
 };
