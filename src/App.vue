@@ -22,6 +22,11 @@ html {
   scroll-behavior: smooth;
   scroll-padding-top: 6rem;
   font-family: "Roboto", sans-serif;
+  -webkit-app-region: drag;
+}
+
+#app {
+  border-radius: 2rem;
   background-color: #313940;
 }
 
