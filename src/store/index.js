@@ -1,51 +1,86 @@
 import { createStore } from "vuex";
+import { uploadFile, readFile } from "@/engine/parser";
+import { notifyer } from "../service/notifyer";
 
 const store = createStore({
   state: {
+    currentFile: null,
     loadedFiles: [],
     fileContent: [],
   },
   getters: {
-    getLoadedFiles: (state) => state.loadedFiles,
+    getCurrentFile: (state) => state.currentFile,
     getContentFile: (state) => state.fileContent,
+    getLoadedFiles: (state) => state.loadedFiles,
   },
   mutations: {
-    //Set state of historic of loaded files
-    setLoadedFiles(state, file) {
+    SetCurrentFile(state, file) {
+      state.currentFile = file;
+    },
+
+    SetLoadedFile(state, file) {
       const files = state.loadedFiles;
+      const rawDate = new Date();
+      const newDate = new Intl.DateTimeFormat("pt-BR", {
+        dateStyle: "short",
+        timeStyle: "short",
+      }).format(rawDate);
+      file.date = newDate;
+      if (files.length > 2) {
+        files.pop();
+      }
       files.unshift(file);
     },
-    //Clean historic loaded files state
-    setEmptyFile(state) {
-      state.loadedFiles = [];
-    },
-    /*------------Content File-----------------*/
-    //Set file parsed content state
-    setContentFile(state, content) {
+
+    SetContentFile(state, content) {
       state.fileContent = content;
     },
-    //Clean content loaded files state
-    setEmptyContent(state) {
-      state.fileContent = [];
+
+    SetEmptyFile(state) {
+      state.loadedFiles = [];
+    },
+
+    SetEmptyCurrent(state) {
+      state.currentFile = null;
+    },
+
+    SetEmptyContent(state) {
+      state.fileContent = null;
     },
   },
   actions: {
-    //Action to set historic loaded file mutation
-    SET_LOADED_FILES({ commit }, file) {
-      commit("setLoadedFiles", file);
+    SET_DIALOG_FILE({ commit }, query) {
+      const load = (file) => {
+        commit("SetCurrentFile", file);
+      };
+      uploadFile(query, load);
     },
-    //Action to set clean file historic mutation
+
+    SET_READ_FILE({ commit }, file) {
+      const read = (content) => {
+        commit("SetContentFile", content);
+        commit("SetLoadedFile", file);
+        commit("SetEmptyCurrent");
+        notifyer.sucess("Extração Concluída");
+      };
+      readFile(file, read);
+    },
+
+    SET_READ_INSTANCE({ commit }, file) {
+      const read = (content) => {
+        commit("SetContentFile", content);
+        notifyer.sucess("Extração Concluída");
+      };
+      readFile(file, read);
+    },
+
     SET_EMPTY_FILE({ commit }) {
-      commit("setEmptyFile");
+      commit("SetEmptyCurrent");
+      commit("SetEmptyFile");
     },
-    /*------------Content File-----------------*/
-    //Action to set file parsed content mutation
-    SET_FILE_CONTENT({ commit }, content) {
-      commit("setContentFile", content);
-    },
-    //Action to set clean parsed content mutation
+
     SET_EMPTY_CONTENT({ commit }) {
-      commit("setEmptyContent");
+      commit("SetEmptyContent");
     },
   },
 });
