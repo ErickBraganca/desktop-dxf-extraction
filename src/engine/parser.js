@@ -8,13 +8,7 @@ let files = null;
 const index = ["35001", "35002", "35003", "34001", "34005", "34006", "34007"];
 let dbParser = [];
 
-const rawDate = new Date();
-const newDate = new Intl.DateTimeFormat("pt-BR", {
-  dateStyle: "short",
-  timeStyle: "short",
-}).format(rawDate);
-
-async function uploadFile(callback) {
+async function uploadFile(query, callback) {
   dialog
     .showOpenDialog({
       title: "Upload Attachments",
@@ -32,7 +26,8 @@ async function uploadFile(callback) {
       const newFile = {
         name: pathArray[pathArray.length - 1],
         path: filePath,
-        date: newDate,
+        query: query,
+        date: null,
       };
       files = newFile;
       if (filePath) {
@@ -44,8 +39,8 @@ async function uploadFile(callback) {
     });
 }
 
-async function readFile(callback) {
-  const filePath = files.path;
+async function readFile(file, callback) {
+  const filePath = file.path;
   const content = fs.readFileSync(filePath).toString();
   index.forEach((key) => {
     const string = new RegExp(key, "g");
