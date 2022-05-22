@@ -3,7 +3,7 @@
     <section class="form-container">
       <ExtractForm />
       <div class="historic-container">
-        <h2>Last Files:</h2>
+        <h2>Latest Files:</h2>
         <FileInstance
           v-bind:key="index"
           v-bind:file="key"
