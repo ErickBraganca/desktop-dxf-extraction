@@ -1,7 +1,7 @@
 <template>
   <div class="file-container">
     <div class="action-container">
-      <i class="fas fa-sign-out-alt"></i>
+      <i class="fas fa-sign-out-alt" v-on:click="getContent(file)"></i>
     </div>
     <div class="data-container">
       <h3>{{ file.name }}</h3>
@@ -11,8 +11,20 @@
 </template>
 
 <script>
+import { useStore } from "vuex";
+
 export default {
   props: { file: { type: Object, required: true } },
+  setup() {
+    const store = useStore();
+
+    const getContent = (file) => {
+      store.dispatch("SET_READ_INSTANCE", file);
+    };
+    return {
+      getContent,
+    };
+  },
 };
 </script>
 
@@ -51,7 +63,7 @@ export default {
 }
 
 .file-container:hover {
-  background-color: #68686805;
+  background-color: #22222205;
 }
 
 .data-container h3 {
@@ -61,10 +73,11 @@ export default {
 .file-container i {
   font-size: 1.5rem;
   color: #fff;
+  cursor: pointer;
 }
 
 .file-container i:hover {
-  color: #0000004d;
+  color: #f3e178da;
 }
 
 .file-container i:active {

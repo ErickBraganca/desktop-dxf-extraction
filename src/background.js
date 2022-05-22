@@ -36,10 +36,8 @@ async function createWindow() {
   const mainMenuTemplate = [
     {
       label: "File",
-      submenu: [{ label: "Upload File" }, { label: "Preferences" }],
+      submenu: [{ label: "About" }, { label: "Help" }],
     },
-    { label: "About" },
-    { label: "Help" },
   ];
 
   const mainMenu = Menu.buildFromTemplate(mainMenuTemplate);

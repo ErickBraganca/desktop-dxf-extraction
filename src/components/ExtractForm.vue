@@ -5,26 +5,33 @@
         <div class="options-container">
           <div class="method-container">
             <label for="method">Extraction Method:</label>
-            <select class="method" id="method">
-              <option>Typical Detail</option>
-              <option>Individual Itens</option>
-              <option>Total List</option>
+            <select class="method" id="method" v-model="method">
+              <option value="std">Select</option>
+              <option value="typ">Typical Detail</option>
+              <option value="ind">Individual Itens</option>
+              <option value="tot">Total List</option>
             </select>
           </div>
           <div class="collection-container">
             <label for="type">Discipline:</label>
-            <select class="type" id="type">
-              <option>Electrical</option>
-              <option>Instrumentation</option>
-              <option>Structural</option>
+            <select class="type" id="type" v-model="discipline">
+              <option value="std">Select</option>
+              <option value="all">All</option>
+              <option value="ele">Electrical</option>
+              <option value="ins">Instrumentation</option>
+              <option value="str">Structural</option>
+              <option value="civ">Civil</option>
             </select>
           </div>
           <div class="collection-container">
-            <label for="type">Item Collection:</label>
-            <select class="type" id="type">
-              <option>Diagram</option>
-              <option>Plant</option>
-              <option>Equipments</option>
+            <label for="type">Document Type:</label>
+            <select class="type" id="type" v-model="type">
+              <option value="std">Select</option>
+              <option value="dig">Diagram</option>
+              <option value="plt">Plant</option>
+              <option value="eqp">Equipments</option>
+              <option value="lay">Layout</option>
+              <option value="arr">Arrangement</option>
             </select>
           </div>
         </div>
@@ -68,54 +75,76 @@
 </template>
 
 <script>
-import { uploadFile, readFile } from "@/engine/parser";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { useStore } from "vuex";
+import { notifyer } from "../service/notifyer";
 
 export default {
   setup() {
     const store = useStore();
-    let fileStatus = ref("Pick File");
-    let fileLoaded = ref(null);
+    let method = ref("std");
+    let discipline = ref("std");
+    let type = ref("std");
 
-    const handleFile = {
-      load: (file) => {
-        if (file) {
-          fileStatus.value = "File Loaded";
-          store.dispatch("SET_LOADED_FILES", file);
-        }
-      },
-      read: (content) => {
-        store.dispatch("SET_EMPTY_CONTENT", content);
-        store.dispatch("SET_FILE_CONTENT", content);
-      },
-      clean: () => {
-        store.dispatch("SET_EMPTY_CONTENT");
-      },
-      delete: () => {
-        store.dispatch("SET_EMPTY_FILE");
-      },
+    const validation = () => {
+      if (
+        method.value != "std" &&
+        discipline.value != "std" &&
+        type.value != "std"
+      ) {
+        return {
+          method: method.value,
+          discipline: discipline.value,
+          type: type.value,
+        };
+      } else {
+        return false;
+      }
     };
 
     const loadFile = () => {
-      uploadFile(handleFile.load);
+      const dummy = validation();
+      if (dummy) {
+        store.dispatch("SET_DIALOG_FILE", dummy);
+      } else {
+        notifyer.alert("Selecione os parâmetro de extração.");
+      }
     };
 
     const getContent = () => {
-      readFile(handleFile.read);
+      const file = currentFile.value;
+      if (file) {
+        store.dispatch("SET_READ_FILE", file);
+      } else {
+        notifyer.error("Nenhum arquivo foi selecionado.");
+      }
     };
 
     const cleanContent = () => {
-      handleFile.clean();
+      store.dispatch("SET_EMPTY_CONTENT");
+      method.value = "std";
+      discipline.value = "std";
+      type.value = "std";
     };
 
     const deletFile = () => {
-      handleFile.delete();
+      store.dispatch("SET_EMPTY_FILE");
     };
+
+    const currentFile = computed(() => store.getters.getCurrentFile);
+    const fileStatus = computed(() => {
+      if (currentFile.value) {
+        return "File Loaded";
+      } else {
+        return "Pick File";
+      }
+    });
 
     return {
       fileStatus,
-      fileLoaded,
+      method,
+      discipline,
+      type,
       loadFile,
       getContent,
       cleanContent,
