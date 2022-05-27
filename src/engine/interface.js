@@ -1,11 +1,10 @@
 import fs from "fs";
-import { generators } from "./generators";
+import { controller } from "@/engine/controller";
 
 const { dialog } = require("@electron/remote");
+const index = ["35001", "35002", "35003", "34001", "34005", "34006", "34007"];
 
 let files = null;
-//Setting parser index codes
-const index = ["35001", "35002", "35003", "34001", "34005", "34006", "34007"];
 let dbParser = [];
 
 async function uploadFile(query, callback) {
@@ -21,6 +20,7 @@ async function uploadFile(query, callback) {
       properties: ["openFile"],
     })
     .then((file) => {
+      console.log("|----[Interface] Started File Loading]----|");
       const filePath = file.filePaths[0];
       const pathArray = filePath.split("\\");
       const newFile = {
@@ -32,6 +32,7 @@ async function uploadFile(query, callback) {
       files = newFile;
       if (filePath) {
         callback(files);
+        console.log("[Interface] Completed File Loading");
       }
     })
     .catch((err) => {
@@ -41,6 +42,8 @@ async function uploadFile(query, callback) {
 
 async function readFile(file, callback) {
   const filePath = file.path;
+  const fileMethod = file.query.method;
+  console.log("[Interface] Started File Processing");
   const content = fs.readFileSync(filePath).toString();
   index.forEach((key) => {
     const string = new RegExp(key, "g");
@@ -51,8 +54,10 @@ async function readFile(file, callback) {
       dbParser.push([count, tag]);
     }
   });
-  generators.occurrenceParser(dbParser, callback);
+  console.log("[Interface] Completed File Processing");
+  const generatorResult = controller.methods(fileMethod, dbParser);
   dbParser = [];
+  callback(generatorResult());
 }
 
 export { uploadFile, readFile };

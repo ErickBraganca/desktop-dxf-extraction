@@ -1,5 +1,5 @@
 import { createStore } from "vuex";
-import { uploadFile, readFile } from "@/engine/parser";
+import { uploadFile, readFile } from "@/engine/interface";
 import { notifyer } from "../service/notifyer";
 
 const store = createStore({

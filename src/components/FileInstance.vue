@@ -31,6 +31,7 @@ export default {
 <style scoped>
 .file-container {
   font-family: "Roboto", sans-serif;
+  text-transform: none;
   display: flex;
   flex-direction: row;
   align-items: center;

@@ -7,9 +7,9 @@
             <label for="method">Extraction Method:</label>
             <select class="method" id="method" v-model="method">
               <option value="std">Select</option>
-              <option value="typ">Typical Detail</option>
-              <option value="ind">Individual Itens</option>
-              <option value="tot">Total List</option>
+              <option value="typical">Typical Detail</option>
+              <option value="individual">Individual Itens</option>
+              <option value="total">Total List</option>
             </select>
           </div>
           <div class="collection-container">
